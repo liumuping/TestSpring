@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lhf.exam.dao.IFoodDao">
+    <resultMap id="foods" type="Food">
+        <result property="id" column="foodId"></result>
+        <result property="name" column="foodname"></result>
+        <!--<result property="foodsetId" column="foodsetId"></result>-->
+        <result property="foodset" column="foodsetname"></result>
+        <result property="price" column="foodprice"></result>
+    </resultMap>
+
+    <select id="getFoodSet" resultType="FoodSet">
+        SELECT  * FROM foodset WHERE isdeleted = 0 LIMIT #{start},#{length}
+    </select>
+
+    <select id="getFoodSetAll" resultType="FoodSet">
+        SELECT  * FROM foodset WHERE isdeleted = 0
+    </select>
+
+    <select id="getFood" resultMap="foods">
+       SELECT food.foodId,food.foodname,foodset.foodsetname,food.foodprice
+       FROM food LEFT JOIN foodset ON food.foodsetId = foodset.foodsetId WHERE food.isdeleted = 0 LIMIT #{start},#{length}
+    </select>
+
+    <select id="getFoodAll" resultMap="foods">
+       SELECT food.foodId,food.foodname,foodset.foodsetname,food.foodprice
+        FROM food LEFT JOIN foodset ON food.foodsetId = foodset.foodsetId WHERE food.isdeleted = 0
+    </select>
+
+    <select id="getFoodById" resultMap="foods" parameterType="int">
+        SELECT * FROM food WHERE foodId = #{foodId}
+    </select>
+
+    <update id="updateFoodSet" >
+       UPDATE foodset SET foodsetname = #{newset} WHERE foodsetname = #{oldset}
+    </update>
+
+    <insert id="insertFoodSet" parameterType="String">
+        INSERT INTO foodset(foodsetname) VALUES(#{foodsetname})
+    </insert>
+
+    <insert id="insertFood" >
+        INSERT INTO food(foodname,foodprice,foodsetId) VALUES(#{food.name},#{food.price},#{food.foodsetId})
+    </insert>
+
+    <update id="updateFood" parameterType="Food">
+       UPDATE food SET foodname=#{food.name},foodprice=#{food.price},foodsetId=#{food.foodsetId} WHERE foodId=#{food.id}
+    </update>
+
+    <update id="deleteFood" parameterType="int">
+        UPDATE food SET isdeleted = 1 WHERE foodId =#{foodId}
+    </update>
+
+    <update id="deleteFoodByFoodSetId" parameterType="int">
+       UPDATE food SET isdeleted = 1 WHERE foodsetId = #{foodsetId}
+    </update>
+
+    <update id="deleteFoodSet" parameterType="int">
+        UPDATE foodset SET isdeleted = 1 WHERE foodsetId =#{foodsetId}
+    </update>
+
+    <select id="getCount" resultType="int">
+       SELECT COUNT(*) FROM food WHERE isdeleted = 0
+    </select>
+
+    <select id="getFoodSetCount" resultType="int">
+        SELECT COUNT(*) FROM foodset WHERE isdeleted = 0
+    </select>
+
+</mapper>

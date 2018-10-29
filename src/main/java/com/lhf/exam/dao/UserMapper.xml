@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        <!--private int rightId;-->
+        <!--private int order;-->
+        <!--private String rightname;-->
+        <!--private String righturi;-->
+<mapper namespace="com.lhf.exam.dao.IUserDao">
+    <resultMap id="access" type="AccessRight">
+        <result column="rightId" property="rightId"></result>
+        <result column="rightname" property="rightname"></result>
+        <result column="righturi" property="righturi"></result>
+    </resultMap>
+    <select id="getUserByNameAndPwd" resultType="User">
+        SELECT * FROM user WHERE username=#{username} AND password=#{password}
+    </select>
+
+
+    <select id="getRoleByUserId" resultType="Role">
+        SELECT * FROM role WHERE roleId IN (SELECT roleId FROM usertorole WHERE userId = #{userId})
+    </select>
+
+    <select id="getRightByRoleId" resultMap="access">
+        SELECT * FROM access WHERE roleId = #{roleId}
+    </select>
+
+
+</mapper>

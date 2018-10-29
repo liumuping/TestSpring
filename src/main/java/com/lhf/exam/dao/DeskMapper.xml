@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lhf.exam.dao.IDeskDao">
+    <!--List<Desk> getDesks(int start,int end);-->
+    <!--boolean insertDesk(Desk desk);-->
+    <!--boolean deleteDesk(int deskId);-->
+    <!--boolean updateDeskStateById(int deskId);-->
+    <!--boolean updateDeskStateByName(String deskname);-->
+    <!--int getCount();-->
+    <!--boolean updateDesk(String deskname,Desk desk);-->
+    <resultMap id="Desks" type="Desk">
+        <result column="deskId" property="id"></result>
+        <result column="deskname" property="name"></result>
+        <result column="deskcontent" property="content"></result>
+        <result column="deskstate" property="state"></result>
+        <collection property="ordertime" column="id" select="selcttime"></collection>
+    </resultMap>
+
+
+    <select id="getDesks" resultMap="Desks">
+        SELECT * FROM desk WHERE isdeleted = 0 LIMIT #{start},#{pagecount}
+    </select>
+
+    <select id="selcttime" parameterType="int" resultType="String">
+      SELECT ordertime FROM orderlist WHERE deskId=#{id}
+    </select>
+
+    <insert id="insertDesk" parameterType="Desk">
+        INSERT INTO desk(deskname,deskcontent) VALUES(#{name},#{content})
+    </insert>
+
+    <update id="deleteDesk" parameterType="int">
+        UPDATE desk SET isdeleted = 1 WHERE deskId = #{id}
+    </update>
+
+    <update id="updateDeskStateById" >
+        UPDATE desk SET deskstate = 1 WHERE deskId = #{id}
+    </update>
+
+    <update id="updateDeskStateByName" >
+        UPDATE desk SET deskstate = 0 WHERE deskname = #{name}
+    </update>
+
+    <select id="getCount" resultType="int">
+        SELECT COUNT(*) FROM desk WHERE isdeleted = 0;
+    </select>
+
+    <update id="updateDesk" >
+        UPDATE desk SET deskname = #{desk.name},deskcontent= #{desk.content} WHERE deskname = #{oldname}
+    </update>
+
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lhf.exam.dao.IOrderDao">
+    <resultMap id="orders" type="Order">
+        <result column="orderId" property="id"></result>
+        <result column="userId" property="userId"></result>
+        <result column="deskId" property="deskId"></result>
+        <result column="deskname" property="deskname"></result>
+        <result column="orderprice" property="vipprice"></result>
+        <result column="ordertime" property="orderdate"></result>
+        <result column="tel" property="tel"></result>
+        <result column="custom" property="custom"></result>
+        <result column="orderstate" property="state"></result>
+    </resultMap>
+    <resultMap id="0rderfoodmap" type="OrderFood">
+        <result column="foodname" property="foodname"></result>
+        <result column="foodprice" property="price"></result>
+        <result column="COUNT(foodname)" property="count"></result>
+    </resultMap>
+    <select id="getOrder" resultMap="orders">
+        SELECT orderlist.orderId,desk.deskname,orderlist.ordertime,
+        orderlist.orderprice,orderlist.orderstate,orderlist.custom,
+        orderlist.tel FROM orderlist LEFT JOIN desk ON orderlist.deskId = desk.deskId
+         WHERE orderlist.isdeleted = 0 LIMIT #{start},#{length}
+    </select>
+
+
+    <insert id="insertOrder" parameterType="Order">
+        INSERT INTO orderlist(userId,deskId,orderprice,ordertime,tel,custom) VALUES(#{order.userId},
+        #{order.deskId},#{order.vipprice},#{order.orderdate},#{order.tel},#{order.custom})
+    </insert>
+
+    <select id="getOrderId" resultType="int">
+        SELECT orderId FROM orderlist WHERE orderstate = 0
+    </select>
+
+    <insert id="insertOrderFood" >
+        INSERT INTO order_food(orderId,foodId) VALUES(#{orderId},#{foodId})
+    </insert>
+
+    <select id="getOrderFood" parameterType="int" resultMap="0rderfoodmap">
+        select food.foodname,food.foodprice,COUNT(foodname) FROM
+        food JOIN order_food ON food.foodId = order_food.foodId WHERE orderId = #{orderId} GROUP BY foodname
+    </select>
+
+    <update id="finishOrder" parameterType="int">
+        UPDATE orderlist SET orderstate = 1 WHERE orderId = #{orderId}
+    </update>
+
+    <select id="getCount()" resultType="int" >
+        SELECT COUNT(*) FROM orderlist WHERE isdeleted = 0
+    </select>
+
+
+</mapper>
